@@ -321,6 +321,7 @@ class AquaAristonHandler:
                  store_folder: str = "",
                  logging_level: str = _LEVEL_NOTSET,
                  gw: str = "",
+                 plant_id: str = ""
                  ) -> None:
         """
         Initialize API.
@@ -461,7 +462,7 @@ class AquaAristonHandler:
         self._lock = threading.Lock()
         self._login = False
         self._password = password
-        self._plant_id = ""
+        self._plant_id = plant_id
         self._plant_id_lock = threading.Lock()
         self._session = requests.Session()
         self._set_param = {}
@@ -978,7 +979,10 @@ class AquaAristonHandler:
                 self._LOGGER.warning('%s Unexpected reply during login: %s', self, resp.status_code)
                 raise Exception("Login unexpected reply code")
 
-            plant_id = self._get_plant_id(resp)  
+            if not self._plant_id:
+                plant_id = self._get_plant_id(resp)
+            else:
+                plant_id = self._plant_id
 
             if plant_id:
                 with self._plant_id_lock:
